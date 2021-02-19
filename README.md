@@ -1,2 +1,2 @@
 # Tao Huang
-[Home Page](https://cnhuangtao.github.com/)
+[Home Page](https://cnhuangtao.github.io/)

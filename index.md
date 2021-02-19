@@ -8,7 +8,7 @@
       <p><b>地址：成都市高新区(西区)西源大道2006号</b></p>
     </td>
     <td width="25%">
-      <img src="/黄涛.jpg" width="100%">
+      <img src="/pic/huangtao.jpg" width="100%">
     </td>
   </tr>
 </table>

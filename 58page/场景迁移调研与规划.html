@@ -1091,21 +1091,125 @@ body .markdown-body
 .highlight .il{color:#009999}
 .highlight .gc{color:#999;background-color:#EAF2F5}
 </style><title>场景迁移调研与规划</title></head><body><article class="markdown-body"><h2><center>场景迁移调研与规划</center></h2>
-<h3>一、 单兴趣/序列模型论文整理</h3>
+<h3>一、 分析</h3>
+<ul>
+<li>可选研究领域有跨域推荐（Cross-domain）以及迁移学习（Transfer Learning）</li>
+<li>迁移学习无法增强两个域的效果，并且训练复杂需要训练两个模型(类似知识蒸馏)，效果不稳定，首页模型效果依然有改进的空间，所以选择跨域推荐的方法</li>
+</ul>
+<hr />
+<h3>二、 方法调研</h3>
+<h4>CIKM 18: CoNet: Collaborative cross networks for cross-domain recommendation</h4>
+<p><a href="https://arxiv.org/pdf/1804.06769.pdf">论文</a></p>
+<h5>研究的场景</h5>
+<ul>
+<li>新闻与广告，解决数据稀疏问题</li>
+</ul>
+<h5>创新点</h5>
+<ul>
+<li>使用DNN做迁移学习，方法类似协同过滤</li>
+<li>迁移学习做推荐系统的比较早期的论文</li>
+</ul>
+<h5>模型</h5>
+<p><img src="https://raw.githubusercontent.com/cnhuangtao/Picture/master/cross-domain/CoNet.png" width="400" height="" align="middle" /><br></p>
+<ol>
+<li>要求用户在两个域都有行为，使用两个域的样本共同训练</li>
+<li>通过输入目标域的item和源域的item，从源域item中迁移知识</li>
+</ol>
 <hr />
 <h4>CIKM 20: MiNet: Mixed Interest Network for Cross-Domain Click-Through Rate Prediction</h4>
-<h5>现有研究存在的问题</h5>
+<p><a href="https://arxiv.org/pdf/2008.02974.pdf">论文</a></p>
+<h5>研究的场景</h5>
 <ul>
-<li>利用来自源域的辅助数据来提高目标域的 CTR 预测性能</li>
+<li>新闻与广告，利用来自源域的辅助数据来提高目标域的 CTR 预测性能</li>
 </ul>
-<h5>对应的解决的方法</h5>
+<h5>创新点</h5>
 <ul>
-<li>基于UC头条（与UC浏览器App集成的新闻提要服务，每天为数亿用户提供服务），其中源域是新闻，目标域是广告。</li>
+<li>加入用户行为序列</li>
 </ul>
 <h5>模型</h5>
 <p><img src="https://raw.githubusercontent.com/cnhuangtao/Picture/master/cross-domain/MiNet.png" width="400" height="" align="middle" /><br></p>
 <ol>
-<li>要求用户在两个域都有行为，使用两个域的样本共同训练（一个用户两个label）</li>
+<li>要求用户在两个域都有行为，使用两个域的样本共同训练</li>
+<li>添加行为序列</li>
+<li>源域与目标域相互独立，源域只用来辅助学习用户向量</li>
+</ol>
+<hr />
+<h4>WWW 20: Exploiting Aesthetic Preference in Deep Cross Networks for Cross-domain Recommendation</h4>
+<p><a href="https://sci-hub.st//https://dl.acm.org/doi/abs/10.1145/3366423.3380036">论文</a></p>
+<h5>研究的场景</h5>
+<ul>
+<li>使用美学信息同时加入两个域，增强两个域的性能</li>
+</ul>
+<h5>创新点</h5>
+<ul>
+<li>“加入美学信息”，其余同CoNet</li>
+</ul>
+<h5>模型</h5>
+<p><img src="https://raw.githubusercontent.com/cnhuangtao/Picture/master/cross-domain/ACDN.png" width="800" height="" align="middle" /><br></p>
+<ol>
+<li>要求用户在两个域都有行为，使用两个域的样本共同训练</li>
+<li>迁移映射矩阵H使用L1正则化诱导稀疏性</li>
+<li>使用ILGNet提取美学特征，两个域公用</li>
+<li>通过输入目标域的item和源域的item，从源域item中迁移知识</li>
+</ol>
+<hr />
+<h4>KDD 21: Dual Attentive Sequential Learning for Cross-Domain Click-Through Rate Prediction</h4>
+<p><a href="https://arxiv.org/pdf/2106.02768.pdf">论文</a></p>
+<h5>研究的场景</h5>
+<ul>
+<li>优酷中的电视剧和短视频，解决数据稀疏问题</li>
+</ul>
+<h5>创新点</h5>
+<ul>
+<li>将两个域的用户特征映射到同一个空间</li>
+<li>使用跨域的注意力机制</li>
+</ul>
+<h5>模型</h5>
+<p><img src="https://raw.githubusercontent.com/cnhuangtao/Picture/master/cross-domain/DASL.png" width="800" height="" align="middle" /><br></p>
+<ol>
+<li>要求用户在两个域都有行为，使用两个域的样本共同训练（一个用户两个label），仅训练有共同用户的样本</li>
+<li>用户embedding使用self-encoder的loss加上隐向量的距离loss，映射到共享的潜在空间中，拉近统一用户的距离</li>
+<li>GRU提取用户兴趣，跨域注意力机制（把两个域的行为连在一起）提取相关item</li>
+<li>这篇文章写的不错，值得重点参考</li>
+</ol>
+<hr />
+<h3>三、模型场景迁移分析与规划</h3>
+<h4>现有研究的问题</h4>
+<ul>
+<li>CoNet和Exploiting类似协同过滤，迁移效果有限</li>
+<li>MiNet仅仅迁移用户向量，对目标域帮助有限</li>
+<li>Dual模型使用自编码器迁移用户向量，跨域attention把两个域的行为连在一起，以迁移行为序列，值得借鉴</li>
+</ul>
+<h5>问题分析</h5>
+<ul>
+<li>所有场景的行为序列都是首页行为序列的子集</li>
+<li>通过首页丰富的数据将知识迁移到大类页，解决大类页数据稀疏和冷启动问题（无租房点击的用户也可通过其他类目的知识进行推荐）。</li>
+<li>大类页细粒度的特征指导行为序列的学习，迁移到首页上</li>
+</ul>
+<h5>BaseModel（参考WWW 21 Dual）</h5>
+<p><img src="https://raw.githubusercontent.com/cnhuangtao/Picture/master/cross-domain/basemodel.png" width="500" height="" align="middle" /><br></p>
+<ol>
+<li>目标域是大类页，源域是首页，迁移知识为行为序列和用户特征</li>
+<li>要求用户在大类页和首页都有曝光才可迁移，样本数量&gt;整租大类页（为大类页用户在首页的曝光次数）</li>
+</ol>
+<h5>Expand Model</h5>
+<p><img src="https://raw.githubusercontent.com/cnhuangtao/Picture/master/cross-domain/expand.png" width="500" height="" align="middle" /><br></p>
+<ol>
+<li>全站共享行为序列，迁移知识为行为序列和用户特征</li>
+<li>如果是层级结构，首页-&gt;租房大类页面-&gt;整租大类页，样本数量&gt;整租大类页（为整租大类页用户在首页的曝光次数）</li>
+<li>如果是并列结构，首页-&gt;租房=二手车，样本数量是租房和二手车曝光用户在首页的曝光量，用户在多个场景都有曝光才可迁移，局限性较大</li>
+</ol>
+<h5>模型后期规划方向</h5>
+<ol>
+<li>如何高效迁移行为序列，并且考虑行为序列的包含关系</li>
+<li>目标域（针对租房）的特征和模型优化</li>
+</ol>
+<h5>离线数据准备</h5>
+<ol>
+<li>复用大类页模型，通过hmc构造帖子特征，第一版暂时不加入实时个性化特征</li>
+<li>通过首页行为序列查询大类页行为历史，并通过行为序列构造首页样本</li>
+<li>使用首页数据处理流程添加首页特征</li>
+<li>模型训练</li>
 </ol>
 <hr /></article></body></html><script async>
 document.write(
